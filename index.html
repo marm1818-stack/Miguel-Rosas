@@ -244,9 +244,8 @@
   .flip-in{display:grid; transition:transform .6s cubic-bezier(.3,.7,.2,1); transform-style:preserve-3d; min-height:260px;}
   .flip.turned .flip-in{transform:rotateY(180deg);}
   .face{grid-area:1/1; backface-visibility:hidden; -webkit-backface-visibility:hidden; padding:22px; border-radius:8px; display:flex; flex-direction:column; gap:10px;}
-  .front{background:var(--ink); color:var(--bg);}
+  .front{background:#10222e; color:#eaf3f7;}
   .front .tag{font-family:"Bricolage Grotesque"; font-weight:700; font-size:.85rem; color:var(--gold-bright);}
-  html[data-theme="dark"] .front{color:var(--ink);}
   .front q{font-family:"Bricolage Grotesque"; font-size:1.35rem; font-weight:700; line-height:1.2; quotes:none;}
   .front .tap{margin-top:auto; font-size:.85rem; opacity:.75;}
   .back{background:var(--panel); border:2px solid var(--moss); transform:rotateY(180deg); font-size:.98rem; line-height:1.55;}
@@ -282,6 +281,10 @@
   .tools{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px;}
 
   footer{border-top:1px solid var(--line); padding:34px 0 60px; color:var(--ink-dim); font-size:.92rem; background:var(--bg-2);}
+  footer .credit{color:var(--ink); font-weight:700; font-family:"Bricolage Grotesque"; margin-bottom:6px;}
+  footer h3{font-size:.82rem; text-transform:none; color:var(--ink); margin:26px 0 10px; font-weight:700;}
+  footer ol.refs{list-style:none; margin:0; padding:0; display:grid; gap:10px;}
+  footer ol.refs li{padding-left:1.6em; text-indent:-1.6em; font-size:.86rem; line-height:1.5;}
   #fx{position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:80;}
 </style>
 </head>
@@ -409,7 +412,7 @@
 <section class="block" id="mitos">
   <div class="wrap">
     <div class="head">
-      <h2>Mitos frecuentes, volteados</h2>
+      <h2>Mitos al descubierto</h2>
       <p>Toca una tarjeta para darle la vuelta y ver qué dice la ciencia.</p>
     </div>
     <div class="myths" id="myths"></div>
@@ -463,7 +466,21 @@
 
 <footer>
   <div class="wrap">
-    <p>Trabajo individual del curso de Biología, 5.º de secundaria. Solución tecnológica para combatir la desinformación sobre el origen de la vida y la evolución del ser humano, era Cenozoica, Cuaternario (Pleistoceno y Holoceno). Las referencias completas en formato APA 7.ª edición están en el informe del proyecto.</p>
+    <p class="credit">Autor: Miguel Rosas</p>
+    <p>Trabajo individual del curso de Biología, 5.º de secundaria. Solución tecnológica para combatir la desinformación sobre el origen de la vida y la evolución del ser humano, era Cenozoica, Cuaternario (Pleistoceno y Holoceno).</p>
+    <h3>Referencias (APA 7.ª edición)</h3>
+    <ol class="refs">
+      <li>Astromia. (s. f.). <em>Era Cenozoica: el Cuaternario (Pleistoceno y Holoceno)</em>. Recuperado el 15 de septiembre de 2026, de https://www.astromia.com/tierraluna/cuaternario.htm</li>
+      <li>Evolución humana. (2026, septiembre). En <em>Wikipedia</em>. Recuperado el 15 de septiembre de 2026, de https://es.wikipedia.org/wiki/Evoluci%C3%B3n_humana</li>
+      <li>Handwerk, B. (2021, 2 de febrero). An evolutionary timeline of Homo sapiens. <em>Smithsonian Magazine</em>. https://www.smithsonianmag.com/science-nature/essential-timeline-understanding-evolution-homo-sapiens-180976807/</li>
+      <li>Holoceno. (2025, noviembre). En <em>Wikipedia</em>. Recuperado el 15 de septiembre de 2026, de https://es.wikipedia.org/wiki/Holoceno</li>
+      <li>Instituto Geográfico Nacional de España. (s. f.). <em>Prehistoria</em>. Atlas Nacional de España. Recuperado el 15 de septiembre de 2026, de https://atlasnacional.ign.es/wane/Prehistoria</li>
+      <li>Línea temporal de la prehistoria humana. (2026, agosto). En <em>Wikipedia</em>. Recuperado el 15 de septiembre de 2026, de https://es.wikipedia.org/wiki/L%C3%ADnea_temporal_de_la_prehistoria_humana</li>
+      <li>Montero-Liberona, C. A. (2022). <em>Noticias falsas y pseudocientíficas</em> [artículo de revisión]. https://www.researchgate.net/publication/364146809_Noticias_falsas_y_pseudocientificas_Fake_news_and_pseudoscientific_ARTiCuLO_DE_REVISION</li>
+      <li>Pleistoceno. (2026, marzo). En <em>Wikipedia</em>. Recuperado el 15 de septiembre de 2026, de https://es.wikipedia.org/wiki/Pleistoceno</li>
+      <li>Smithsonian National Museum of Natural History, Human Origins Program. (2021, 27 de abril). <em>Human evolution interactive timeline</em>. https://humanorigins.si.edu/evidence/human-evolution-interactive-timeline</li>
+      <li>Universidad Nacional de Educación a Distancia, Biblioteca. (s. f.). Ciencia falsa. En <em>Noticias falsas y desinformación</em> [guía temática]. Recuperado el 15 de septiembre de 2026, de https://uned.libguides.com/noticias_falsas/ciencia_falsa</li>
+    </ol>
   </div>
 </footer>
 
@@ -645,14 +662,22 @@
     function step(ts){ if(!t0) t0=ts; var p=clamp((ts-t0)/dur,0,1), e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2; var s=a+(b-a)*e; slider.value=s*1000; update(s); if(p<1) tw=requestAnimationFrame(step); }
     tw=requestAnimationFrame(step);
   }
-  // reproducir
-  var playBtn = document.getElementById('play'), playing=false, pr=0, plast=0;
+  // reproducir — duración fija de 35 s, calculada por tiempo real transcurrido (no por cuadros acumulados)
+  var PLAY_MS = 90000;
+  var playBtn = document.getElementById('play'), playing=false, pr=0, pStart=0, pStartS=0;
   function stopPlay(){ playing=false; cancelAnimationFrame(pr); cancelAnimationFrame(tw); playBtn.textContent='▶'; playBtn.setAttribute('aria-label','Reproducir viaje automático'); }
   playBtn.addEventListener('click', function(){
     if(playing){ stopPlay(); return; }
     if(parseFloat(slider.value)>=999) slider.value=0;
-    playing=true; playBtn.textContent='❚❚'; playBtn.setAttribute('aria-label','Pausar viaje'); plast=0;
-    function step(ts){ if(!playing) return; if(!plast) plast=ts; var dt=ts-plast; plast=ts; var s=parseFloat(slider.value)/1000 + dt/32000; if(s>=1){ s=1; slider.value=1000; update(1); stopPlay(); return; } slider.value=s*1000; update(s); pr=requestAnimationFrame(step); }
+    playing=true; playBtn.textContent='❚❚'; playBtn.setAttribute('aria-label','Pausar viaje');
+    pStart = Date.now(); pStartS = parseFloat(slider.value)/1000;
+    function step(){
+      if(!playing) return;
+      var elapsed = Date.now() - pStart;
+      var s = pStartS + elapsed / PLAY_MS;
+      if(s>=1){ s=1; slider.value=1000; update(1); stopPlay(); return; }
+      slider.value = s*1000; update(s); pr=requestAnimationFrame(step);
+    }
     pr=requestAnimationFrame(step);
   });
   makeFX(document.getElementById('mSnow'), function(){return curCold;}, 150, 45);
