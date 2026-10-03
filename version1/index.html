@@ -1,1 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Huellas del Cuaternario — Ciencia vs. mito</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ede7d9;
+    --bg-alt:#e3dbc8;
+    --panel:#f6f1e6;
+    --ink:#241d14;
+    --ink-dim:#5c5341;
+    --ochre:#a86a2a;
+    --ochre-deep:#7d4d1c;
+    --rust:#8c3f30;
+    --moss:#4f6046;
+    --ice:#33586b;
+    --line: rgba(36,29,20,0.16);
+    --shadow: none;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#181209;
+      --bg-alt:#1f170d;
+      --panel:#241a10;
+      --ink:#ede4d3;
+      --ink-dim:#b8ac95;
+      --ochre:#d99a4e;
+      --ochre-deep:#c98a3c;
+      --rust:#c96a55;
+      --moss:#8caa7c;
+      --ice:#7fa8bd;
+      --line: rgba(237,228,211,0.16);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#181209;
+    --bg-alt:#1f170d;
+    --panel:#241a10;
+    --ink:#ede4d3;
+    --ink-dim:#b8ac95;
+    --ochre:#d99a4e;
+    --ochre-deep:#c98a3c;
+    --rust:#c96a55;
+    --moss:#8caa7c;
+    --ice:#7fa8bd;
+    --line: rgba(237,228,211,0.16);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Work Sans", -apple-system, "Segoe UI", sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:"Fraunces", Georgia, "Times New Roman", serif;
+    font-weight:600;
+    line-height:1.12;
+    margin:0 0 0.4em 0;
+    letter-spacing:-0.01em;
+  }
+  p{margin:0 0 1em 0; max-width:62ch;}
+  .max{max-width:62ch;}
+  a{color:var(--ochre-deep);}
+  button{font-family:inherit;}
+  ::selection{background:var(--ochre); color:#1a1208;}
+
+  /* ---- layout shell ---- */
+  .wrap{max-width:980px; margin:0 auto; padding:0 24px;}
+
+  header.hero{
+    position:relative;
+    padding:64px 24px 48px;
+    overflow:hidden;
+    border-bottom:1px solid var(--line);
+    background:
+      linear-gradient(180deg, transparent 0%, var(--bg) 100%),
+      repeating-linear-gradient(180deg, var(--bg-alt) 0 2px, transparent 2px 4px);
+  }
+  .hero-inner{max-width:980px; margin:0 auto; position:relative; z-index:2;}
+  .eyebrow-row{
+    display:flex; align-items:center; gap:10px;
+    color:var(--ink-dim); font-size:0.85rem; margin-bottom:18px;
+  }
+  .eyebrow-row .dot{width:6px;height:6px;border-radius:50%;background:var(--rust);}
+  h1.title{font-size:clamp(2.1rem, 5vw, 3.4rem); max-width:14ch;}
+  .hero p.lead{font-size:1.08rem; color:var(--ink-dim); max-width:52ch;}
+  .hero-strata{
+    position:absolute; right:-40px; top:0; bottom:0; width:46%;
+    opacity:0.9; pointer-events:none;
+  }
+  @media (max-width:760px){ .hero-strata{display:none;} }
+
+  nav.tabs{
+    position:sticky; top:0; z-index:20;
+    background:var(--bg); border-bottom:1px solid var(--line);
+    overflow-x:auto; white-space:nowrap;
+    scrollbar-width:none;
+  }
+  nav.tabs::-webkit-scrollbar{display:none;}
+  nav.tabs .wrap{display:flex; gap:2px;}
+  nav.tabs button{
+    background:none; border:none; cursor:pointer;
+    padding:16px 16px 13px; font-size:0.92rem; color:var(--ink-dim);
+    border-bottom:3px solid transparent;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  nav.tabs button:hover{color:var(--ink);}
+  nav.tabs button.active{color:var(--ink); border-bottom-color:var(--ochre-deep); font-weight:600;}
+  nav.tabs button:focus-visible, button:focus-visible, .layer:focus-visible, .card-flip:focus-visible{
+    outline:2px solid var(--ice); outline-offset:2px;
+  }
+
+  section.view{display:none; padding:52px 24px 72px; border-bottom:1px solid var(--line);}
+  section.view.active{display:block;}
+  section.view:last-of-type{border-bottom:none;}
+  .section-head{margin-bottom:32px;}
+  .section-head h2{font-size:clamp(1.5rem,3vw,2rem);}
+  .section-head p{color:var(--ink-dim);}
+
+  /* ---- timeline / core sample ---- */
+  .core-wrap{display:flex; gap:32px; align-items:flex-start; flex-wrap:wrap;}
+  .core{
+    flex:0 0 210px; display:flex; flex-direction:column-reverse;
+    border:1px solid var(--line); border-radius:2px; overflow:hidden;
+  }
+  .layer{
+    cursor:pointer; border:none; text-align:left;
+    color:#fbf6ea; padding:0 14px;
+    display:flex; align-items:center;
+    font-family:"Work Sans"; font-size:0.82rem; font-weight:600;
+    border-top:1px solid rgba(0,0,0,0.18);
+    transition:filter .15s ease, padding-left .15s ease;
+  }
+  .layer:hover, .layer.active{filter:brightness(1.12); padding-left:20px;}
+  .layer span.era-tag{display:block; font-weight:400; opacity:0.85; font-size:0.72rem;}
+  .detail{
+    flex:1 1 320px; min-width:280px;
+    background:var(--panel); border:1px solid var(--line); border-radius:2px;
+    padding:24px 26px; min-height:230px;
+  }
+  .detail h3{font-size:1.2rem; margin-bottom:6px;}
+  .detail .when{color:var(--ochre-deep); font-weight:600; font-size:0.85rem; margin-bottom:12px; display:block;}
+  .detail p{color:var(--ink-dim); font-size:0.95rem;}
+
+  /* ---- detective cards ---- */
+  .post-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:2px;
+    padding:20px 22px; margin-bottom:16px;
+  }
+  .post-card .handle{font-size:0.8rem; color:var(--ink-dim); margin-bottom:8px; display:block;}
+  .post-card blockquote{margin:0 0 16px 0; font-size:1rem;}
+  .choice-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .choice-row button{
+    padding:8px 14px; border-radius:20px; border:1px solid var(--line);
+    background:transparent; color:var(--ink); cursor:pointer; font-size:0.85rem;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .choice-row button:hover{border-color:var(--ochre-deep);}
+  .feedback{margin-top:14px; padding:12px 14px; border-radius:2px; font-size:0.9rem; display:none;}
+  .feedback.show{display:block;}
+  .feedback.correct{background:rgba(79,96,70,0.18); border:1px solid var(--moss); color:var(--ink);}
+  .feedback.wrong{background:rgba(140,63,48,0.16); border:1px solid var(--rust); color:var(--ink);}
+  .tag-pill{display:inline-block; padding:2px 9px; border-radius:20px; font-size:0.72rem; font-weight:600; margin-left:6px;}
+  .tag-evidencia{background:rgba(79,96,70,0.25); color:var(--moss);}
+  .tag-opinion{background:rgba(51,88,107,0.25); color:var(--ice);}
+  .tag-pseudo{background:rgba(140,63,48,0.25); color:var(--rust);}
+
+  /* ---- myths accordion ---- */
+  .myth{border-bottom:1px solid var(--line);}
+  .myth button.mq{
+    width:100%; text-align:left; background:none; border:none; cursor:pointer;
+    padding:18px 4px; display:flex; justify-content:space-between; gap:16px;
+    color:var(--ink); font-size:1rem; font-weight:600;
+  }
+  .myth .plus{color:var(--ochre-deep); font-size:1.2rem; flex:0 0 auto;}
+  .myth .ma{max-height:0; overflow:hidden; transition:max-height .25s ease;}
+  .myth .ma-inner{padding:0 4px 20px; color:var(--ink-dim); font-size:0.95rem;}
+  .myth.open .ma{max-height:340px;}
+  .myth.open .plus{transform:rotate(45deg);}
+
+  /* ---- quiz ---- */
+  .quiz-q{display:none;}
+  .quiz-q.active{display:block;}
+  .quiz-progress{color:var(--ink-dim); font-size:0.85rem; margin-bottom:6px;}
+  .quiz-q h3{font-size:1.15rem; margin-bottom:16px;}
+  .quiz-opts button{
+    display:block; width:100%; text-align:left; padding:13px 16px; margin-bottom:10px;
+    border:1px solid var(--line); background:var(--panel); color:var(--ink);
+    border-radius:2px; cursor:pointer; font-size:0.95rem;
+  }
+  .quiz-opts button:hover{border-color:var(--ochre-deep);}
+  .quiz-opts button.right{border-color:var(--moss); background:rgba(79,96,70,0.18);}
+  .quiz-opts button.wrong{border-color:var(--rust); background:rgba(140,63,48,0.16);}
+  .quiz-result{text-align:center; padding:32px 0;}
+  .quiz-result .score{font-family:"Fraunces"; font-size:3rem; color:var(--ochre-deep);}
+  .btn{
+    display:inline-block; padding:11px 20px; border-radius:2px; border:1px solid var(--ink);
+    background:var(--ink); color:var(--bg); cursor:pointer; font-size:0.9rem; font-weight:600;
+  }
+  .btn.ghost{background:transparent; color:var(--ink);}
+
+  /* ---- survey ---- */
+  form.survey{display:flex; flex-direction:column; gap:18px; max-width:520px;}
+  form.survey label{font-size:0.9rem; font-weight:600; display:block; margin-bottom:6px;}
+  form.survey textarea, form.survey select{
+    width:100%; padding:10px 12px; border-radius:2px; border:1px solid var(--line);
+    background:var(--panel); color:var(--ink); font-family:inherit; font-size:0.95rem;
+  }
+  form.survey textarea{min-height:70px; resize:vertical;}
+  .survey-list{margin-top:28px; border-top:1px solid var(--line); padding-top:20px;}
+  .survey-entry{background:var(--panel); border:1px solid var(--line); border-radius:2px; padding:14px 16px; margin-bottom:10px; font-size:0.88rem;}
+  .survey-entry .meta{color:var(--ink-dim); font-size:0.78rem; margin-bottom:4px;}
+  .note{font-size:0.82rem; color:var(--ink-dim); margin-top:10px;}
+
+  footer{padding:36px 24px 60px; color:var(--ink-dim); font-size:0.85rem;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <svg class="hero-strata" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <rect x="0" y="380" width="400" height="120" fill="#33586b" opacity="0.35"/>
+    <rect x="0" y="300" width="400" height="90" fill="#4f6046" opacity="0.35"/>
+    <rect x="0" y="220" width="400" height="90" fill="#8c3f30" opacity="0.3"/>
+    <rect x="0" y="130" width="400" height="100" fill="#a86a2a" opacity="0.35"/>
+    <rect x="0" y="0" width="400" height="140" fill="#7d4d1c" opacity="0.4"/>
+    <path d="M60 460 C 80 420, 70 400, 90 370 C 100 350, 85 330, 95 300" stroke="#ede7d9" stroke-width="4" fill="none" opacity="0.5" stroke-linecap="round"/>
+    <circle cx="95" cy="290" r="9" fill="#ede7d9" opacity="0.5"/>
+  </svg>
+  <div class="hero-inner">
+    <div class="eyebrow-row"><span class="dot"></span> Proyecto de Biología · 5.º de secundaria · Era Cenozoica — Cuaternario</div>
+    <h1 class="title">Huellas del Cuaternario</h1>
+    <p class="lead">Una aplicación web para entender, con evidencia, cómo evolucionó el ser humano durante el Pleistoceno y el Holoceno — y para reconocer cuándo una publicación en redes sociales informa, opina o inventa.</p>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="wrap">
+    <button data-view="linea" class="active">Línea de tiempo</button>
+    <button data-view="detective">Detective de datos</button>
+    <button data-view="mitos">Mitos y realidad</button>
+    <button data-view="quiz">Ponte a prueba</button>
+    <button data-view="encuesta">Tu opinión</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- LINEA DE TIEMPO -->
+  <section class="view active" id="linea">
+    <div class="section-head">
+      <h2>Un sondeo a través del Cuaternario</h2>
+      <p>Este período geológico —el que vivimos hoy— se divide en dos épocas: el <strong>Pleistoceno</strong> (2.59 millones de años a 11 700 años atrás) y el <strong>Holoceno</strong> (11 700 años atrás hasta hoy). Toca cada estrato, del más antiguo al más reciente, como si perforaras un núcleo de sedimento.</p>
+    </div>
+    <div class="core-wrap">
+      <div class="core" id="core"></div>
+      <div class="detail" id="detail">
+        <span class="when">Toca un estrato</span>
+        <h3>Elige una capa del núcleo</h3>
+        <p>Cada capa representa un momento del Pleistoceno o el Holoceno, con la evidencia fósil, genética o arqueológica en la que se basa.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DETECTIVE -->
+  <section class="view" id="detective">
+    <div class="section-head">
+      <h2>Detective de la desinformación</h2>
+      <p>Estas publicaciones son ejemplos del tipo de contenido que circula en redes sociales sobre el origen de la vida y la evolución humana. Clasifica cada una: ¿evidencia científica, opinión personal o pseudociencia?</p>
+    </div>
+    <div id="posts"></div>
+  </section>
+
+  <!-- MITOS -->
+  <section class="view" id="mitos">
+    <div class="section-head">
+      <h2>Mitos frecuentes y qué dice la evidencia</h2>
+      <p>La desinformación no siempre nace de mala fe: muchas veces viene de una simplificación mal entendida. Abre cada mito para ver la explicación científica.</p>
+    </div>
+    <div id="myths"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="view" id="quiz">
+    <div class="section-head">
+      <h2>Ponte a prueba</h2>
+      <p>Cinco preguntas sobre el Pleistoceno, el Holoceno y cómo distinguir ciencia de pseudociencia.</p>
+    </div>
+    <div id="quizBody"></div>
+  </section>
+
+  <!-- ENCUESTA -->
+  <section class="view" id="encuesta">
+    <div class="section-head">
+      <h2>Cuéntanos tu opinión</h2>
+      <p>Esta sección simula la encuesta de validación que se aplicará a la comunidad educativa tras presentar el prototipo.</p>
+    </div>
+    <form class="survey" id="surveyForm">
+      <div>
+        <label for="q1">¿Comprendiste la explicación sobre la evolución humana en el Pleistoceno y el Holoceno?</label>
+        <select id="q1" required>
+          <option value="">Selecciona una opción</option>
+          <option>Sí, completamente</option>
+          <option>Sí, en parte</option>
+          <option>No, me quedaron dudas</option>
+        </select>
+      </div>
+      <div>
+        <label for="q2">¿Qué fue lo más difícil de entender?</label>
+        <textarea id="q2" placeholder="Escribe aquí..."></textarea>
+      </div>
+      <div>
+        <label for="q3">¿Qué mejorarías del recurso?</label>
+        <textarea id="q3" placeholder="Escribe aquí..."></textarea>
+      </div>
+      <button type="submit" class="btn">Enviar respuesta</button>
+      <p class="note">Tus respuestas se guardan solo en este navegador, únicamente para probar el prototipo — no se envían a ningún servidor.</p>
+    </form>
+    <div class="survey-list" id="surveyList"></div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <p>Prototipo elaborado como trabajo individual del curso de Biología — Solución tecnológica para combatir la desinformación sobre el origen de la vida y la evolución humana. Las referencias científicas completas (formato APA 7.ª ed.) se encuentran en el informe del proyecto.</p>
+</footer>
+
+<script>
+(function(){
+  // ---------------- TABS ----------------
+  var tabs = document.querySelectorAll('nav.tabs button');
+  var views = document.querySelectorAll('section.view');
+  tabs.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      tabs.forEach(function(b){b.classList.remove('active');});
+      views.forEach(function(v){v.classList.remove('active');});
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.view).classList.add('active');
+    });
+  });
+
+  // ---------------- TIMELINE ----------------
+  var layers = [
+    {label:'2.59 Ma', title:'Inicio del Pleistoceno', color:'#7d4d1c',
+      text:'Comienza el Cuaternario. El planeta entra en un ciclo de glaciaciones. En África vive Homo habilis, que fabrica las primeras herramientas de piedra tallada y se alimenta como carroñero-recolector.'},
+    {label:'2 Ma', title:'Homo erectus', color:'#a86a2a',
+      text:'Aparece Homo erectus, de cerebro más grande. Fabrica herramientas achelenses más elaboradas, caza en grupo y es la primera especie humana que sale de África. Se le asocia el uso temprano del fuego.'},
+    {label:'315 000 años', title:'Fósiles más antiguos de Homo sapiens', color:'#8c3f30',
+      text:'En Jebel Irhoud (Marruecos) se hallan los restos de Homo sapiens más antiguos conocidos, con rasgos ya modernos en la cara pero un cráneo aún alargado.'},
+    {label:'230 000 años', title:'Homo neanderthalensis', color:'#4f6046',
+      text:'Los neandertales, adaptados al frío extremo de Europa y Asia occidental, desarrollan la industria musteriense. Convivieron y se cruzaron genéticamente con Homo sapiens.'},
+    {label:'90 000 años', title:'Salida de África', color:'#33586b',
+      text:'Grupos de Homo sapiens comienzan a dispersarse fuera de África hacia el Levante mediterráneo, el inicio de la colonización del resto del planeta.'},
+    {label:'40 000 años', title:'Paleolítico superior', color:'#355c6b',
+      text:'Homo sapiens se expande por Eurasia y Oceanía. Aparece el arte rupestre, los adornos personales y una tecnología lítica más fina. Es la culminación del proceso evolutivo humano en el Pleistoceno.'},
+    {label:'11 700 años', title:'Fin del Pleistoceno / inicio del Holoceno', color:'#6b7f5c',
+      text:'Termina la última glaciación, el nivel del mar sube y el clima se estabiliza. Se extingue gran parte de la megafauna (mamuts, perezosos gigantes). Comienza la época que vivimos hoy.'},
+    {label:'11 500–10 000 años', title:'Agricultura y ganadería', color:'#8caa7c',
+      text:'En el Holoceno, Homo sapiens —única especie humana que sobrevive— domestica plantas y animales en distintos focos del mundo, dando origen a las primeras aldeas y, luego, a las civilizaciones.'},
+    {label:'Hoy', title:'Holoceno actual', color:'#d99a4e',
+      text:'Seguimos siendo la misma especie biológica que hace 300 000 años; lo que ha cambiado radicalmente es nuestra cultura, tecnología y forma de organizarnos en sociedad.'}
+  ];
+  var core = document.getElementById('core');
+  var detail = document.getElementById('detail');
+  layers.forEach(function(l, i){
+    var b = document.createElement('button');
+    b.className = 'layer';
+    b.style.background = l.color;
+    b.style.height = (28 + (i%3)*6) + 'px';
+    b.innerHTML = l.title + '<span class="era-tag">'+l.label+'</span>';
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.layer').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');
+      detail.innerHTML = '<span class="when">'+l.label+'</span><h3>'+l.title+'</h3><p>'+l.text+'</p>';
+    });
+    core.appendChild(b);
+  });
+
+  // ---------------- DETECTIVE ----------------
+  var posts = [
+    {handle:'@museo_evolucion (cuenta institucional)',
+     text:'“Un análisis genético publicado en una revista científica confirmó que un fósil de 300 000 años presenta rasgos de Homo sapiens temprano.”',
+     answer:'evidencia', why:'Se basa en un estudio con datos publicados y revisados por otros científicos: es evidencia científica.'},
+    {handle:'@user_curioso99',
+     text:'“Yo siento que los humanos siempre fuimos igual desde el principio de los tiempos, no me convence eso de que cambiamos.”',
+     answer:'opinion', why:'Es una creencia personal sin datos que la respalden ni la contradigan: es una opinión.'},
+    {handle:'@verdad_oculta_x',
+     text:'“Video viral: ‘Los científicos ocultan que los humanos convivieron con dinosaurios hace 6000 años’.”',
+     answer:'pseudociencia', why:'Contradice evidencia geológica y paleontológica sólida (los dinosaurios no aviares se extinguieron hace 66 millones de años) y usa la narrativa de un “encubrimiento” sin pruebas: es pseudociencia.'},
+    {handle:'@canal_documental_natura',
+     text:'“Con réplicas de cráneos, un documental muestra cómo cambió la forma del cráneo de Homo erectus a Homo sapiens a lo largo de casi dos millones de años.”',
+     answer:'evidencia', why:'Se apoya en el registro fósil real y en comparaciones anatómicas: es evidencia científica divulgada de forma didáctica.'},
+    {handle:'@misterios_antiguos',
+     text:'“Las estatuas y construcciones antiguas debieron ser hechas por seres extraterrestres, porque los humanos primitivos no podían haberlo logrado solos.”',
+     answer:'pseudociencia', why:'Parte de una suposición sin evidencia arqueológica y subestima las capacidades humanas documentadas: es pseudociencia (teoría de “antiguos astronautas”).'},
+    {handle:'@ana_estudiante',
+     text:'“A mí la evolución humana no me interesa mucho, prefiero otros temas de biología.”',
+     answer:'opinion', why:'Expresa una preferencia personal, no una afirmación sobre hechos: es una opinión.'}
+  ];
+  var postsWrap = document.getElementById('posts');
+  posts.forEach(function(p, idx){
+    var card = document.createElement('div');
+    card.className = 'post-card';
+    card.innerHTML =
+      '<span class="handle">'+p.handle+'</span>'+
+      '<blockquote>'+p.text+'</blockquote>'+
+      '<div class="choice-row">'+
+        '<button data-a="evidencia">Evidencia científica</button>'+
+        '<button data-a="opinion">Opinión</button>'+
+        '<button data-a="pseudociencia">Pseudociencia</button>'+
+      '</div>'+
+      '<div class="feedback" id="fb'+idx+'"></div>';
+    var fb = card.querySelector('#fb'+idx);
+    card.querySelectorAll('.choice-row button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var correct = btn.dataset.a === p.answer;
+        fb.className = 'feedback show ' + (correct ? 'correct' : 'wrong');
+        var tagClass = p.answer === 'evidencia' ? 'tag-evidencia' : (p.answer === 'opinion' ? 'tag-opinion' : 'tag-pseudo');
+        var tagLabel = p.answer === 'evidencia' ? 'Evidencia científica' : (p.answer === 'opinion' ? 'Opinión' : 'Pseudociencia');
+        fb.innerHTML = (correct ? '<strong>Correcto.</strong> ' : '<strong>No exactamente.</strong> ') + p.why +
+          '<span class="tag-pill '+tagClass+'">'+tagLabel+'</span>';
+      });
+    });
+    postsWrap.appendChild(card);
+  });
+
+  // ---------------- MITOS ----------------
+  var myths = [
+    {q:'“Venimos del mono”',
+     a:'No descendemos de los simios actuales. Los humanos y los grandes simios (chimpancés, gorilas) compartimos un ancestro común que vivió hace varios millones de años y que ya no existe; desde entonces cada linaje evolucionó por su cuenta.'},
+    {q:'“La evolución es solo una teoría, o sea que no está probada”',
+     a:'En ciencia, una "teoría" no es una simple suposición: es una explicación respaldada por evidencia extensa y repetida (fósiles, genética, anatomía comparada, observación directa). La evolución biológica tiene ese nivel de respaldo.'},
+    {q:'“Falta un eslabón perdido”',
+     a:'La evolución humana no es una cadena lineal con un hueco por rellenar, sino un árbol con varias ramas: Australopithecus, Homo habilis, Homo erectus, Homo neanderthalensis, Homo longi, Homo sapiens y otras especies, todas documentadas con fósiles.'},
+    {q:'“Seres extraterrestres crearon a los humanos”',
+     a:'Esta idea (a veces llamada teoría de los "antiguos astronautas") no cuenta con evidencia física; se basa en interpretar de forma especulativa arte y construcciones antiguas, ignorando lo que sabemos sobre las capacidades reales de las sociedades del pasado.'},
+    {q:'“La Tierra y el ser humano tienen solo unos miles de años”',
+     a:'Distintos métodos independientes —datación radiométrica, estratigrafía geológica, genética de poblaciones— coinciden en que el Pleistoceno comenzó hace 2.59 millones de años y que Homo sapiens existe desde hace unos 300 000 años.'}
+  ];
+  var mythsWrap = document.getElementById('myths');
+  myths.forEach(function(m){
+    var div = document.createElement('div');
+    div.className = 'myth';
+    div.innerHTML = '<button class="mq"><span>'+m.q+'</span><span class="plus">+</span></button>'+
+      '<div class="ma"><div class="ma-inner">'+m.a+'</div></div>';
+    div.querySelector('.mq').addEventListener('click', function(){
+      div.classList.toggle('open');
+    });
+    mythsWrap.appendChild(div);
+  });
+
+  // ---------------- QUIZ ----------------
+  var quizData = [
+    {q:'¿Cuánto tiempo abarca aproximadamente el Pleistoceno?', opts:['Unos 12 000 años','Unos 2.59 millones de años','Unos 66 millones de años'], correct:1},
+    {q:'¿Qué marca el final del Pleistoceno y el inicio del Holoceno?', opts:['La extinción de los dinosaurios','El fin de la última glaciación y la subida del nivel del mar','La invención de la escritura'], correct:1},
+    {q:'¿Qué actividad económica caracteriza al Holoceno y da origen a las primeras civilizaciones?', opts:['La caza de dinosaurios','La agricultura y la ganadería','La minería industrial'], correct:1},
+    {q:'Si una publicación afirma algo sobre ciencia sin citar estudios ni datos verificables, y contradice evidencia sólida, probablemente es...', opts:['Evidencia científica','Una opinión válida como cualquier otra','Pseudociencia'], correct:2},
+    {q:'¿Cuál de estas especies convivió y se cruzó genéticamente con Homo sapiens?', opts:['Homo neanderthalensis','Tyrannosaurus rex','Australopithecus afarensis (hace 3.5 millones de años)'], correct:0}
+  ];
+  var qIndex = 0, score = 0;
+  var quizBody = document.getElementById('quizBody');
+  function renderQuiz(){
+    if(qIndex >= quizData.length){
+      quizBody.innerHTML = '<div class="quiz-result"><div class="score">'+score+' / '+quizData.length+'</div>'+
+        '<p>Respuestas correctas.</p><button class="btn ghost" id="retry">Volver a intentar</button></div>';
+      document.getElementById('retry').addEventListener('click', function(){ qIndex=0; score=0; renderQuiz(); });
+      return;
+    }
+    var item = quizData[qIndex];
+    var html = '<div class="quiz-progress">Pregunta '+(qIndex+1)+' de '+quizData.length+'</div>'+
+      '<h3>'+item.q+'</h3><div class="quiz-opts">';
+    item.opts.forEach(function(o, i){
+      html += '<button data-i="'+i+'">'+o+'</button>';
+    });
+    html += '</div>';
+    quizBody.innerHTML = html;
+    var answered = false;
+    quizBody.querySelectorAll('.quiz-opts button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if(answered) return;
+        answered = true;
+        var i = parseInt(btn.dataset.i, 10);
+        if(i === item.correct){ btn.classList.add('right'); score++; }
+        else {
+          btn.classList.add('wrong');
+          quizBody.querySelectorAll('.quiz-opts button')[item.correct].classList.add('right');
+        }
+        setTimeout(function(){ qIndex++; renderQuiz(); }, 900);
+      });
+    });
+  }
+  renderQuiz();
+
+  // ---------------- ENCUESTA (localStorage, solo para pruebas del prototipo) ----------------
+  var form = document.getElementById('surveyForm');
+  var list = document.getElementById('surveyList');
+  function loadEntries(){
+    try{
+      var raw = localStorage.getItem('huellas_encuesta');
+      return raw ? JSON.parse(raw) : [];
+    }catch(e){ return []; }
+  }
+  function saveEntries(entries){
+    try{ localStorage.setItem('huellas_encuesta', JSON.stringify(entries)); }catch(e){}
+  }
+  function renderEntries(){
+    var entries = loadEntries();
+    if(!entries.length){ list.innerHTML = ''; return; }
+    list.innerHTML = '<h3 style="font-size:1rem;">Respuestas guardadas en este navegador ('+entries.length+')</h3>' +
+      entries.map(function(e){
+        return '<div class="survey-entry"><div class="meta">'+e.date+' · Comprensión: '+e.q1+'</div>'+
+          (e.q2 ? '<div><strong>Dificultad:</strong> '+e.q2+'</div>' : '') +
+          (e.q3 ? '<div><strong>Sugerencia:</strong> '+e.q3+'</div>' : '') +
+          '</div>';
+      }).join('');
+  }
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var entry = {
+      date: new Date().toLocaleString(),
+      q1: document.getElementById('q1').value,
+      q2: document.getElementById('q2').value,
+      q3: document.getElementById('q3').value
+    };
+    var entries = loadEntries();
+    entries.unshift(entry);
+    saveEntries(entries);
+    form.reset();
+    renderEntries();
+  });
+  renderEntries();
+
+})();
+</script>
+</body>
+</html>
 
